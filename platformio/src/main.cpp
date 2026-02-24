@@ -304,15 +304,15 @@ void setup()
   Adafruit_BME280 bme;
 
   if(bme.begin(BME_ADDRESS, &I2C_bme))
-  {
 #endif
+
 #if defined(SENSOR_BME680)
   Serial.print(String(TXT_READING_FROM) + " BME680... ");
   Adafruit_BME680 bme(&I2C_bme);
 
   if(bme.begin(BME_ADDRESS))
-  {
 #endif
+  {
     inTemp     = bme.readTemperature(); // Celsius
     inHumidity = bme.readHumidity();    // %
 
