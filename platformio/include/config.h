@@ -21,6 +21,8 @@
 #include <cstdint>
 #include <Arduino.h>
 
+#define PIN_NOT_ASSIGNED   255
+#ifndef PHOTO_PAINTER
 // E-PAPER PANEL
 // This project supports the following E-Paper panels:
 //   DISP_BW_V2 - 7.5in e-Paper (v2)      800x480px  Black/White
@@ -32,6 +34,7 @@
 // #define DISP_3C_B
 // #define DISP_7C_F
 // #define DISP_BW_V1
+// #define DISP_7C_E6
 
 // E-PAPER DRIVER BOARD
 // The DESPI-C02 is the only officially supported driver board.
@@ -62,6 +65,20 @@
   // #define ACCENT_COLOR GxEPD_ORANGE
 #endif
 
+#else
+
+// PHOTO_PAINTER
+#define DISP_7C_E6
+#define DRIVER_DESPI_C02
+#define ACCENT_COLOR GxEPD_RED
+#define SENSOR_SHTC3
+#define PMU_AXP2102
+#endif   
+
+#if __has_include("local_config.h")
+// If local_config.h exists use it rather than the following definitions.
+#include "local_config.h"
+#else
 // LOCALE
 // If your locale is not here, you can add it by copying and modifying one of
 // the files in src/locales. Please feel free to create a pull request to add
@@ -318,6 +335,8 @@
 //   level 1: increased verbosity for debugging
 //   level 2: print api responses to serial monitor
 #define DEBUG_LEVEL 0
+#endif   // __has_include("local_config.h")
+
 
 // Set the below constants in "config.cpp"
 extern const uint8_t PIN_BAT_ADC;
@@ -368,6 +387,7 @@ extern const uint32_t MIN_BATTERY_VOLTAGE;
 #if !(  defined(DISP_BW_V2)  \
       ^ defined(DISP_3C_B)   \
       ^ defined(DISP_7C_F)   \
+      ^ defined(DISP_7C_E6)   \
       ^ defined(DISP_BW_V1))
   #error Invalid configuration. Exactly one display panel must be selected.
 #endif
@@ -376,6 +396,7 @@ extern const uint32_t MIN_BATTERY_VOLTAGE;
   #error Invalid configuration. Exactly one driver board must be selected.
 #endif
 #if !(  defined(SENSOR_BME280) \
+      ^ defined(SENSOR_SHTC3) \
       ^ defined(SENSOR_BME680))
   #error Invalid configuration. Exactly one sensor must be selected.
 #endif

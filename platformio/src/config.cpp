@@ -18,6 +18,10 @@
 #include <Arduino.h>
 #include "config.h"
 
+#if __has_include("local_pins.h")
+#pragma message("pin assignments defined by pins.h")
+#include "pins.h"
+#elif !defined(PHOTO_PAINTER)
 // PINS
 // The configuration below is intended for use with the project's official 
 // wiring diagrams using the FireBeetle 2 ESP32-E microcontroller board.
@@ -42,8 +46,32 @@ const uint8_t PIN_BME_SDA = 17;
 const uint8_t PIN_BME_SCL = 16;
 const uint8_t PIN_BME_PWR =  4;   // Irrelevant if directly connected to 3.3V
 const uint8_t BME_ADDRESS = 0x76; // 0x76 if SDO -> GND; 0x77 if SDO -> VCC
+#else
+// PHOTO_PAINTER
+// PINS
+// ADC pin used to measure battery voltage
+const uint8_t PIN_BAT_ADC  = A2; // A0 for micro-usb firebeetle
+// Pins for E-Paper Driver Board
+const uint8_t PIN_EPD_BUSY = 13;
+const uint8_t PIN_EPD_CS   = 9;
+const uint8_t PIN_EPD_RST  = 12;
+const uint8_t PIN_EPD_DC   = 8;
+const uint8_t PIN_EPD_SCK  = 9;
+const uint8_t PIN_EPD_MISO = 19; // 19 Master-In Slave-Out not used, as no data from display
+const uint8_t PIN_EPD_MOSI = 11;
+const uint8_t PIN_EPD_PWR  = PIN_NOT_ASSIGNED;
+// I2C Pins used for SHTC3
+const uint8_t PIN_BME_SDA = 47;
+const uint8_t PIN_BME_SCL = 48;
+const uint8_t PIN_BME_PWR =  PIN_NOT_ASSIGNED;
+#endif
 
 // WIFI
+#if __has_include("local.h")
+#pragma message("Using local.h.cpp")
+#include "local.h"
+#else
+
 const char *WIFI_SSID     = "ssid";
 const char *WIFI_PASSWORD = "password";
 const unsigned long WIFI_TIMEOUT = 10000; // ms, WiFi connection timeout.
@@ -74,6 +102,7 @@ const String OWM_ENDPOINT = "api.openweathermap.org";
 // - Go to https://home.openweathermap.org/subscriptions and set the "Calls per
 //   day (no more than)" to 1,000. This ensures you will never overrun the free
 //   calls.
+
 const String OWM_ONECALL_VERSION = "3.0";
 
 // LOCATION
@@ -163,4 +192,5 @@ const uint32_t MIN_BATTERY_VOLTAGE = 3000; // (millivolts)
 // FONTS
 // ALERTS
 // BATTERY MONITORING
+#endif   // __has_include("local.h")
 

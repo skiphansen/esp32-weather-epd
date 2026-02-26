@@ -37,6 +37,9 @@
 #if defined(SENSOR_BME680)
   #include <Adafruit_BME680.h>
 #endif
+#if defined(SENSOR_SHTC3)
+  #include <Adafruit_SHTC3.h>
+#endif
 #if defined(USE_HTTPS_WITH_CERT_VERIF) || defined(USE_HTTPS_WITH_CERT_VERIF)
   #include <WiFiClientSecure.h>
 #endif
@@ -289,9 +292,12 @@ void setup()
   }
   killWiFi(); // WiFi no longer needed
 
-  // GET INDOOR TEMPERATURE AND HUMIDITY, start BMEx80...
-  pinMode(PIN_BME_PWR, OUTPUT);
-  digitalWrite(PIN_BME_PWR, HIGH);
+  if(PIN_BME_PWR != PIN_NOT_ASSIGNED)
+  {
+    // GET INDOOR TEMPERATURE AND HUMIDITY, start BMEx80...
+    pinMode(PIN_BME_PWR, OUTPUT);
+    digitalWrite(PIN_BME_PWR, HIGH);
+  }
 #if defined(SENSOR_INIT_DELAY_MS) && SENSOR_INIT_DELAY_MS > 0
   delay(SENSOR_INIT_DELAY_MS);
 #endif
@@ -299,6 +305,21 @@ void setup()
   I2C_bme.begin(PIN_BME_SDA, PIN_BME_SCL, 100000); // 100kHz
   float inTemp     = NAN;
   float inHumidity = NAN;
+
+#if defined(SENSOR_SHTC3)
+  Serial.print(String(TXT_READING_FROM) + " SHTC3... ");
+  Adafruit_SHTC3 bme;
+  #define readTemperature getTemperatureSensor
+  #define readHumidity getHumiditySensor
+
+  if(bme.begin(&I2C_bme)) {
+    sensors_event_t humidity, temp;
+
+    bme.getEvent(&humidity, &temp);
+    inTemp = temp.temperature;
+    inHumidity = humidity.relative_humidity;
+  }
+#else
 #if defined(SENSOR_BME280)
   Serial.print(String(TXT_READING_FROM) + " BME280... ");
   Adafruit_BME280 bme;
@@ -330,12 +351,16 @@ void setup()
       Serial.println(TXT_SUCCESS);
     }
   }
+#endif   // SENSOR_SHTC3
   else
   {
     statusStr = "BME " + String(TXT_NOT_FOUND); // check wiring
     Serial.println(statusStr);
   }
-  digitalWrite(PIN_BME_PWR, LOW);
+  if(PIN_BME_PWR != PIN_NOT_ASSIGNED)
+  {
+    digitalWrite(PIN_BME_PWR, LOW);
+  }
 
   String refreshTimeStr;
   getRefreshTimeStr(refreshTimeStr, timeConfigured, &timeInfo);

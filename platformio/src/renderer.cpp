@@ -70,6 +70,19 @@
                PIN_EPD_BUSY));
 #endif
 
+#ifdef DISP_7C_E6
+  #define DISP_WIDTH  800
+  #define DISP_HEIGHT 480
+  #include <GxEPD2_7C.h>
+  GxEPD2_7C<GxEPD2_730c_ACeP_730,
+            GxEPD2_730c_ACeP_730::HEIGHT / 4> display(
+    GxEPD2_730c_ACeP_730(PIN_EPD_CS,
+                         PIN_EPD_DC,
+                         PIN_EPD_RST,
+                         PIN_EPD_BUSY));
+#endif
+
+
 #ifndef ACCENT_COLOR
   #define ACCENT_COLOR GxEPD_BLACK
 #endif
@@ -224,8 +237,11 @@ void drawMultiLnString(int16_t x, int16_t y, const String &text,
  */
 void initDisplay()
 {
-  pinMode(PIN_EPD_PWR, OUTPUT);
-  digitalWrite(PIN_EPD_PWR, HIGH);
+  if(PIN_EPD_PWR != PIN_NOT_ASSIGNED)
+  {
+    pinMode(PIN_EPD_PWR, OUTPUT);
+    digitalWrite(PIN_EPD_PWR, HIGH);
+  }
 #ifdef DRIVER_WAVESHARE
   display.init(115200, true, 2, false);
 #endif
@@ -255,7 +271,10 @@ void powerOffDisplay()
 {
   display.hibernate(); // turns powerOff() and sets controller to deep sleep for
                        // minimum power use
-  digitalWrite(PIN_EPD_PWR, LOW);
+  if(PIN_EPD_PWR != PIN_NOT_ASSIGNED)
+  {
+    digitalWrite(PIN_EPD_PWR, LOW);
+  }
   return;
 } // end initDisplay
 

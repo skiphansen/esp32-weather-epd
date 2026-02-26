@@ -34,6 +34,7 @@
 
 /* Returns battery voltage in millivolts (mv).
  */
+#ifndef PMU_AXP2102
 uint32_t readBatteryVoltage()
 {
   esp_adc_cal_characteristics_t adc_chars;
@@ -72,6 +73,30 @@ uint32_t readBatteryVoltage()
   batteryVoltage *= 2;
   return batteryVoltage;
 } // end readBatteryVoltage
+
+#else
+
+// using AXP2102
+#define XPOWERS_CHIP_AXP2101
+#include "XPowersLib.h"
+
+XPowersAXP2101 pmu;
+uint32_t readBatteryVoltage()
+{
+   uint32_t batteryVoltage = 0;
+   if (pmu.begin(Wire, AXP2101_SLAVE_ADDRESS, PIN_BME_SDA, PIN_BME_SCL)) {
+      pmu.enableSystemVoltageMeasure();
+      pmu.setALDO4Voltage(3300);
+      pmu.enableALDO4();
+      batteryVoltage = (uint32_t) (pmu.getBattVoltage() * 1000);
+   }
+   else {
+      Serial.println("Error: AXP2101 NOT detected");
+   }
+
+  return batteryVoltage;
+} // end readBatteryVoltage
+#endif   // PMU_AXP2102
 
 /* Returns battery percentage, rounded to the nearest integer.
  * Takes a voltage in millivolts and uses a sigmoidal approximation to find an

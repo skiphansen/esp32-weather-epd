@@ -1,2 +1,5 @@
 .pio
 .vscode
+include/local.h
+include/local_config.h
+
