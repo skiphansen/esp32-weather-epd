@@ -130,19 +130,32 @@ void beginDeepSleep(unsigned long startTime, tm *timeInfo)
  */
 void setup()
 {
-  unsigned long startTime = millis();
-  Serial.begin(115200);
+   Serial.begin(115200);
+   delay(1000); // Wait for 1 second
+}
 
+void setupInternal()
+{
+  unsigned long startTime = millis();
+
+
+#if 1
+
+  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
 #if DEBUG_LEVEL >= 1
+  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   printHeapUsage();
 #endif
 
-  disableBuiltinLED();
+  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
+//  disableBuiltinLED();
 
   // Open namespace for read/write to non-volatile storage
+  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   prefs.begin(NVS_NAMESPACE, false);
 
 #if BATTERY_MONITORING
+  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   uint32_t batteryVoltage = readBatteryVoltage();
   Serial.print(TXT_BATTERY_VOLTAGE);
   Serial.println(": " + String(batteryVoltage) + "mv");
@@ -211,7 +224,9 @@ void setup()
 
   // START WIFI
   int wifiRSSI = 0; // “Received Signal Strength Indicator"
+  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   wl_status_t wifiStatus = startWiFi(wifiRSSI);
+  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   if (wifiStatus != WL_CONNECTED)
   { // WiFi Connection Failed
     killWiFi();
@@ -318,6 +333,7 @@ void setup()
     bme.getEvent(&humidity, &temp);
     inTemp = temp.temperature;
     inHumidity = humidity.relative_humidity;
+    Serial.printf("inHumidity %d\n",inHumidity);
   }
 #else
 #if defined(SENSOR_BME280)
@@ -359,6 +375,7 @@ void setup()
   }
   if(PIN_BME_PWR != PIN_NOT_ASSIGNED)
   {
+     Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
     digitalWrite(PIN_BME_PWR, LOW);
   }
 
@@ -368,9 +385,12 @@ void setup()
   getDateStr(dateStr, &timeInfo);
 
   // RENDER FULL REFRESH
+  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   initDisplay();
+  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   do
   {
+     Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
     drawCurrentConditions(owm_onecall.current, owm_onecall.daily[0],
                           owm_air_pollution, inTemp, inHumidity);
     drawOutlookGraph(owm_onecall.hourly, owm_onecall.daily, timeInfo);
@@ -381,15 +401,27 @@ void setup()
 #endif
     drawStatusBar(statusStr, refreshTimeStr, wifiRSSI, batteryVoltage);
   } while (display.nextPage());
+  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   powerOffDisplay();
 
   // DEEP SLEEP
   beginDeepSleep(startTime, &timeInfo);
+#endif
 } // end setup
 
 /* This will never run
  */
 void loop()
 {
+   static int bFirst = 1;
+   if(bFirst) {
+      bFirst = 0;
+      Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
+      setupInternal();
+   }
+   
+
+   Serial.println("Hello, World!"); // Print "Hello, World!" to the Serial Monitor
+   delay(1000); // Wait for 1 second
 } // end loop
 

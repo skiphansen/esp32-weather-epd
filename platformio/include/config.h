@@ -27,14 +27,14 @@
 // This project supports the following E-Paper panels:
 //   DISP_BW_V2 - 7.5in e-Paper (v2)      800x480px  Black/White
 //   DISP_3C_B  - 7.5in e-Paper (B)       800x480px  Red/Black/White
-//   DISP_7C_F  - 7.3in ACeP e-Paper (F)  800x480px  7-Color
+//   DISP_7C_S  - 7.3in Spectra 6 e-Paper 800x480px  7-Color
 //   DISP_BW_V1 - 7.5in e-Paper (v1)      640x384px  Black/White
 // Uncomment the macro that identifies your physical panel.
 #define DISP_BW_V2
 // #define DISP_3C_B
 // #define DISP_7C_F
 // #define DISP_BW_V1
-// #define DISP_7C_E6
+// #define DISP_7C_S
 
 // E-PAPER DRIVER BOARD
 // The DESPI-C02 is the only officially supported driver board.
@@ -68,7 +68,7 @@
 #else
 
 // PHOTO_PAINTER
-#define DISP_7C_E6
+#define DISP_7C_S
 #define DRIVER_DESPI_C02
 #define ACCENT_COLOR GxEPD_RED
 #define SENSOR_SHTC3
@@ -172,8 +172,8 @@
 //   Running cert.py will generate an updated cert.h file.
 // (uncomment exactly one)
 // #define USE_HTTP
-// #define USE_HTTPS_NO_CERT_VERIF
-#define USE_HTTPS_WITH_CERT_VERIF // REQUIRES MANUAL UPDATE WHEN CERT EXPIRES
+#define USE_HTTPS_NO_CERT_VERIF
+// #define USE_HTTPS_WITH_CERT_VERIF // REQUIRES MANUAL UPDATE WHEN CERT EXPIRES
 
 // WIND DIRECTION INDICATOR
 // Choose whether the wind direction indicator should be an arrow, number, or
@@ -301,6 +301,11 @@
 //   1 : Enable
 #define DISPLAY_HOURLY_ICONS 1
 
+// DISPLAY_ROTATION
+//   Set rotation setting for display, 0 thru 3 corresponding to 4 
+//   cardinal rotations
+#define DISPLAY_ROTATION   0
+
 // ALERTS
 //   The handling of alerts is complex. Each country has a unique national alert
 //   system that receives alerts from many different government agencies. This
@@ -333,6 +338,7 @@
 //   level 1: increased verbosity for debugging
 //   level 2: print api responses to serial monitor
 #define DEBUG_LEVEL 0
+
 #endif   // __has_include("local_config.h")
 
 
@@ -385,7 +391,7 @@ extern const uint32_t MIN_BATTERY_VOLTAGE;
 #if !(  defined(DISP_BW_V2)  \
       ^ defined(DISP_3C_B)   \
       ^ defined(DISP_7C_F)   \
-      ^ defined(DISP_7C_E6)   \
+      ^ defined(DISP_7C_S)   \
       ^ defined(DISP_BW_V1))
   #error Invalid configuration. Exactly one display panel must be selected.
 #endif

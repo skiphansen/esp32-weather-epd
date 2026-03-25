@@ -56,8 +56,8 @@ const uint8_t PIN_EPD_BUSY = 13;
 const uint8_t PIN_EPD_CS   = 9;
 const uint8_t PIN_EPD_RST  = 12;
 const uint8_t PIN_EPD_DC   = 8;
-const uint8_t PIN_EPD_SCK  = 9;
-const uint8_t PIN_EPD_MISO = 19; // 19 Master-In Slave-Out not used, as no data from display
+const uint8_t PIN_EPD_SCK  = 10;
+const uint8_t PIN_EPD_MISO = PIN_NOT_ASSIGNED;
 const uint8_t PIN_EPD_MOSI = 11;
 const uint8_t PIN_EPD_PWR  = PIN_NOT_ASSIGNED;
 // I2C Pins used for SHTC3
@@ -68,7 +68,7 @@ const uint8_t PIN_BME_PWR =  PIN_NOT_ASSIGNED;
 
 // WIFI
 #if __has_include("local.h")
-#pragma message("Using local.h.cpp")
+#pragma message("Using local.h")
 #include "local.h"
 #else
 

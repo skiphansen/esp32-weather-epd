@@ -85,10 +85,12 @@ uint32_t readBatteryVoltage()
 {
    uint32_t batteryVoltage = 0;
    if (pmu.begin(Wire, AXP2101_SLAVE_ADDRESS, PIN_BME_SDA, PIN_BME_SCL)) {
+      Serial.println("AXP2101 detected");
       pmu.enableSystemVoltageMeasure();
       pmu.setALDO4Voltage(3300);
       pmu.enableALDO4();
       batteryVoltage = (uint32_t) (pmu.getBattVoltage() * 1000);
+      batteryVoltage = 3535;
    }
    else {
       Serial.println("Error: AXP2101 NOT detected");
