@@ -72,18 +72,6 @@
 #endif
 
 #ifdef DISP_7C_E6
-  #define DISP_WIDTH  800
-  #define DISP_HEIGHT 480
-  #include <GxEPD2_7C.h>
-  GxEPD2_7C<GxEPD2_730c_ACeP_730,
-            GxEPD2_730c_ACeP_730::HEIGHT / 4> display(
-    GxEPD2_730c_ACeP_730(PIN_EPD_CS,
-                         PIN_EPD_DC,
-                         PIN_EPD_RST,
-                         PIN_EPD_BUSY));
-#endif
-
-#ifdef DISP_7C_S
   GxEPD2_7C<GxEPD2_730c_GDEP073E01,
             GxEPD2_730c_GDEP073E01::HEIGHT / 4> display(
     GxEPD2_730c_GDEP073E01(PIN_EPD_CS,

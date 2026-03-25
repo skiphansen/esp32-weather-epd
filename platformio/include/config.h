@@ -68,7 +68,7 @@
 #else
 
 // PHOTO_PAINTER
-#define DISP_7C_S
+#define DISP_7C_E6
 #define DRIVER_DESPI_C02
 #define ACCENT_COLOR GxEPD_RED
 #define SENSOR_SHTC3
@@ -391,7 +391,7 @@ extern const uint32_t MIN_BATTERY_VOLTAGE;
 #if !(  defined(DISP_BW_V2)  \
       ^ defined(DISP_3C_B)   \
       ^ defined(DISP_7C_F)   \
-      ^ defined(DISP_7C_S)   \
+      ^ defined(DISP_7C_E6)   \
       ^ defined(DISP_BW_V1))
   #error Invalid configuration. Exactly one display panel must be selected.
 #endif
