@@ -1,8 +1,6 @@
 // To configure your local build without modifing config.cpp copy
 // this file to local.h and edit it as desired.
 
-const char *WIFI_SSID     = "ssid";
-const char *WIFI_PASSWORD = "password";
 const unsigned long WIFI_TIMEOUT = 10000; // ms, WiFi connection timeout.
 
 // HTTP
@@ -15,7 +13,6 @@ const unsigned HTTP_CLIENT_TCP_TIMEOUT = 10000; // ms
 
 // OPENWEATHERMAP API
 // OpenWeatherMap API key, https://openweathermap.org/
-const String OWM_APIKEY   = "abcdefghijklmnopqrstuvwxyz012345";
 const String OWM_ENDPOINT = "api.openweathermap.org";
 // OpenWeatherMap One Call 2.5 API is deprecated for all new free users
 // (accounts created after Summer 2022).

@@ -405,7 +405,9 @@ void setupInternal()
   powerOffDisplay();
 
   // DEEP SLEEP
-  beginDeepSleep(startTime, &timeInfo);
+  if(SLEEP_DURATION != 0) {
+     beginDeepSleep(startTime, &timeInfo);
+  }
 #endif
 } // end setup
 
