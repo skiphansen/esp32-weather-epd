@@ -60,7 +60,7 @@ const uint8_t PIN_EPD_SCK  = 10;
 const uint8_t PIN_EPD_MISO = PIN_NOT_ASSIGNED;
 const uint8_t PIN_EPD_MOSI = 11;
 const uint8_t PIN_EPD_PWR  = PIN_NOT_ASSIGNED;
-// I2C Pins used for SHTC3
+// I2C Pins used for SHTC3 BME & AXP2101 PMU
 const uint8_t PIN_BME_SDA = 47;
 const uint8_t PIN_BME_SCL = 48;
 const uint8_t PIN_BME_PWR =  PIN_NOT_ASSIGNED;

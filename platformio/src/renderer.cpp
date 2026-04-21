@@ -234,42 +234,30 @@ void drawMultiLnString(int16_t x, int16_t y, const String &text,
  */
 void initDisplay()
 {
-   Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   if(PIN_EPD_PWR != PIN_NOT_ASSIGNED)
   {
-     Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
     pinMode(PIN_EPD_PWR, OUTPUT);
     digitalWrite(PIN_EPD_PWR, HIGH);
   }
 #ifdef DRIVER_WAVESHARE
-  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   display.init(115200, true, 2, false);
 #endif
 #ifdef DRIVER_DESPI_C02
-  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   display.init(115200, true, 10, false);
 #endif
   // remap spi
-  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   SPI.end();
-  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   SPI.begin(PIN_EPD_SCK,
             PIN_EPD_MISO,
             PIN_EPD_MOSI,
             PIN_EPD_CS);
 
-  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   display.setRotation(DISPLAY_ROTATION);
-  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   display.setTextSize(1);
-  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   display.setTextColor(GxEPD_BLACK);
-  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   display.setTextWrap(false);
   // display.fillScreen(GxEPD_WHITE);
-  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   display.setFullWindow();
-  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   display.firstPage(); // use paged drawing mode, sets fillScreen(GxEPD_WHITE)
   return;
 } // end initDisplay

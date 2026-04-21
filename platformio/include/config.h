@@ -66,13 +66,13 @@
 #endif
 
 #else
-
-// PHOTO_PAINTER
-#define DISP_7C_E6
-#define DRIVER_DESPI_C02
-#define ACCENT_COLOR GxEPD_RED
-#define SENSOR_SHTC3
-#define PMU_AXP2102
+   // PHOTO_PAINTER
+   #define DISP_7C_E6
+   #define DRIVER_DESPI_C02
+   #define ACCENT_COLOR GxEPD_RED
+   #define SENSOR_SHTC3
+   #define PMU_AXP2102
+   #define HAS_BATT_CHARGER
 #endif   
 
 #if __has_include("local_config.h")

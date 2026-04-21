@@ -1,3 +1,5 @@
+#include "logging.h"
+
 // LOCALE
 // If your locale is not here, you can add it by copying and modifying one of
 // the files in src/locales. Please feel free to create a pull request to add
@@ -220,7 +222,7 @@
 // They are drawn at the the x-axis tick marks just above the temperature line
 //   0 : Disable
 //   1 : Enable
-#define DISPLAY_HOURLY_ICONS 1
+#define DISPLAY_HOURLY_ICONS 0
 
 // DISPLAY_ROTATION
 //   Set rotation setting for display, 0 thru 3 corresponding to 4 

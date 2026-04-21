@@ -1,1 +1,1 @@
-/home/skip/.platformio/penv/bin/esptool --port /dev/ttyACM0 $*
+python /home/skip/.platformio/packages/tool-esptoolpy/esptool.py --port /dev/ttyACM0 $*

@@ -80,9 +80,10 @@ uint32_t readBatteryVoltage()
 #define XPOWERS_CHIP_AXP2101
 #include "XPowersLib.h"
 
-XPowersAXP2101 pmu;
 uint32_t readBatteryVoltage()
 {
+   XPowersAXP2101 pmu;
+
    uint32_t batteryVoltage = 0;
    if (pmu.begin(Wire, AXP2101_SLAVE_ADDRESS, PIN_BME_SDA, PIN_BME_SCL)) {
       Serial.println("AXP2101 detected");
@@ -90,7 +91,7 @@ uint32_t readBatteryVoltage()
       pmu.setALDO4Voltage(3300);
       pmu.enableALDO4();
       batteryVoltage = (uint32_t) (pmu.getBattVoltage() * 1000);
-      batteryVoltage = 3535;
+      LOG("batteryVoltage %ld\n",batteryVoltage);
    }
    else {
       Serial.println("Error: AXP2101 NOT detected");
@@ -98,6 +99,21 @@ uint32_t readBatteryVoltage()
 
   return batteryVoltage;
 } // end readBatteryVoltage
+
+bool isOnBatteryPwr()
+{
+   XPowersAXP2101 pmu;
+   if (pmu.begin(Wire, AXP2101_SLAVE_ADDRESS, PIN_BME_SDA, PIN_BME_SCL)) {
+      LOG("Battery %s connected,  %s charging\n",
+          pmu.isBatteryConnect() ? "is" : "not",
+          pmu.isCharging() ? "is" : "not");
+   }
+   else {
+      LOG("Error: AXP2101 NOT detected");
+   }
+   return pmu.isBatteryConnect() && !pmu.isCharging();
+}
+
 #endif   // PMU_AXP2102
 
 /* Returns battery percentage, rounded to the nearest integer.

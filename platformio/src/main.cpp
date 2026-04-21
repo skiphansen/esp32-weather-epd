@@ -138,24 +138,16 @@ void setupInternal()
 {
   unsigned long startTime = millis();
 
-
-#if 1
-
-  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
 #if DEBUG_LEVEL >= 1
-  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   printHeapUsage();
 #endif
 
-  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
 //  disableBuiltinLED();
 
   // Open namespace for read/write to non-volatile storage
-  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   prefs.begin(NVS_NAMESPACE, false);
 
 #if BATTERY_MONITORING
-  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   uint32_t batteryVoltage = readBatteryVoltage();
   Serial.print(TXT_BATTERY_VOLTAGE);
   Serial.println(": " + String(batteryVoltage) + "mv");
@@ -167,7 +159,7 @@ void setupInternal()
   bool lowBat = prefs.getBool("lowBat", false);
 
   // low battery, deep sleep now
-  if (batteryVoltage <= LOW_BATTERY_VOLTAGE)
+  if (isOnBatteryPwr() && batteryVoltage <= LOW_BATTERY_VOLTAGE)
   {
     if (lowBat == false)
     { // battery is now low for the first time
@@ -224,9 +216,7 @@ void setupInternal()
 
   // START WIFI
   int wifiRSSI = 0; // “Received Signal Strength Indicator"
-  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   wl_status_t wifiStatus = startWiFi(wifiRSSI);
-  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   if (wifiStatus != WL_CONNECTED)
   { // WiFi Connection Failed
     killWiFi();
@@ -317,6 +307,7 @@ void setupInternal()
   delay(SENSOR_INIT_DELAY_MS);
 #endif
   TwoWire I2C_bme = TwoWire(0);
+  LOG("PIN_BME_SDA %d PIN_BME_SCL %d\n",PIN_BME_SDA,PIN_BME_SCL);
   I2C_bme.begin(PIN_BME_SDA, PIN_BME_SCL, 100000); // 100kHz
   float inTemp     = NAN;
   float inHumidity = NAN;
@@ -329,11 +320,13 @@ void setupInternal()
 
   if(bme.begin(&I2C_bme)) {
     sensors_event_t humidity, temp;
+    LOG("calling getEvent()\n");
 
     bme.getEvent(&humidity, &temp);
     inTemp = temp.temperature;
+    LOG("inTemp %f C, %f F\n",inTemp,inTemp * 9.0 / 5.0 + 32.0);
     inHumidity = humidity.relative_humidity;
-    Serial.printf("inHumidity %d\n",inHumidity);
+    LOG("inHumidity %f\n",inHumidity);
   }
 #else
 #if defined(SENSOR_BME280)
@@ -375,7 +368,6 @@ void setupInternal()
   }
   if(PIN_BME_PWR != PIN_NOT_ASSIGNED)
   {
-     Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
     digitalWrite(PIN_BME_PWR, LOW);
   }
 
@@ -385,12 +377,9 @@ void setupInternal()
   getDateStr(dateStr, &timeInfo);
 
   // RENDER FULL REFRESH
-  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   initDisplay();
-  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   do
   {
-     Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
     drawCurrentConditions(owm_onecall.current, owm_onecall.daily[0],
                           owm_air_pollution, inTemp, inHumidity);
     drawOutlookGraph(owm_onecall.hourly, owm_onecall.daily, timeInfo);
@@ -401,24 +390,21 @@ void setupInternal()
 #endif
     drawStatusBar(statusStr, refreshTimeStr, wifiRSSI, batteryVoltage);
   } while (display.nextPage());
-  Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
   powerOffDisplay();
 
   // DEEP SLEEP
   if(SLEEP_DURATION != 0) {
      beginDeepSleep(startTime, &timeInfo);
   }
-#endif
 } // end setup
 
-/* This will never run
+/* This will never run unless SLEEP_DURATION == 0
  */
 void loop()
 {
    static int bFirst = 1;
    if(bFirst) {
       bFirst = 0;
-      Serial.printf("%s#%d\n",__FUNCTION__,__LINE__);
       setupInternal();
    }
    

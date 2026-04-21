@@ -81,5 +81,11 @@ void disableBuiltinLED();
 const uint8_t *getMoonPhaseBitmap48(const owm_daily_t &daily);
 const char *getMoonPhaseStr(const owm_daily_t &daily);
 
+#ifdef HAS_BATT_CHARGER
+bool isOnBatteryPwr();
+#else
+#define isOnBatteryPwr() 0
+#endif
+
 #endif
 
