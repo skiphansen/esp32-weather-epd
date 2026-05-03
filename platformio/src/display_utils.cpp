@@ -80,18 +80,128 @@ uint32_t readBatteryVoltage()
 #define XPOWERS_CHIP_AXP2101
 #include "XPowersLib.h"
 
+void DumpRegs2102(XPowersAXP2101 &pmu)
+{
+   uint8_t Buf[16];
+   int BytesRead;
+
+   memset(Buf,0xff,sizeof(Buf));
+   for(int i = 0; i < 0xb0; i += 16) {
+      if(pmu.readRegister(i,Buf,16)) {
+         LOG("readRegister failed @ 0x%x\n",i);
+         break;
+      }
+      LOG("%02x: ",i);
+      DumpHex(Buf,sizeof(Buf));
+   }
+}
+
+void MonitorCharge()
+{
+   XPowersAXP2101 pmu;
+
+   if(pmu.begin(Wire, AXP2101_SLAVE_ADDRESS, PIN_BME_SDA, PIN_BME_SCL)) {
+      LOG("AXP2101 detected\n");
+      uint8_t Status = pmu.getChargerStatus();
+      uint32_t batteryVoltage = pmu.getBattVoltage();
+
+      while(!isOnBatteryPwr()) {
+         const char *StatusTxt = NULL;
+
+         switch(Status) {
+            case XPOWERS_AXP2101_CHG_TRI_STATE:
+               StatusTxt = "Tri_Charge";
+               break;
+
+            case XPOWERS_AXP2101_CHG_PRE_STATE:
+               StatusTxt = "Pre_Charge";
+               break;
+
+            case XPOWERS_AXP2101_CHG_CC_STATE:
+               StatusTxt = "Constant_Charge";
+               break;
+
+            case XPOWERS_AXP2101_CHG_CV_STATE:
+               StatusTxt = "Constant_Voltage";
+               break;
+
+            case XPOWERS_AXP2101_CHG_DONE_STATE:
+               StatusTxt = "Charge_Done";
+               break;
+
+            case XPOWERS_AXP2101_CHG_STOP_STATE:
+               StatusTxt = "Not_Charging";
+               break;
+         }
+
+         if(StatusTxt == NULL) {
+            LOG("Unknown status 0x%02x\n",Status);
+         }
+         else {
+            LOG("Charger status %s (0x%02x)\n",StatusTxt,Status);
+         }
+         uint8_t OldStatus = Status;
+         uint32_t batteryVoltage = 0;
+
+         do {
+            Status = pmu.getChargerStatus();
+            uint32_t New = pmu.getBattVoltage();
+            if(batteryVoltage != New) {
+               batteryVoltage = New;
+               LOG("Battery voltage %d\n",batteryVoltage);
+            }
+         } while(Status == OldStatus);
+      }
+   }
+}
 uint32_t readBatteryVoltage()
 {
    XPowersAXP2101 pmu;
+   static bool bFirst = true;
 
    uint32_t batteryVoltage = 0;
    if (pmu.begin(Wire, AXP2101_SLAVE_ADDRESS, PIN_BME_SDA, PIN_BME_SCL)) {
       Serial.println("AXP2101 detected");
+      if(bFirst) {
+      // First power up, initialize AXP2101 charger
+#ifdef PHOTO_PAINTER
+      // Charger setup copied from Waveshare's ESP32-S3-PhotoPainter repo
+      // 01_Example\xiaozhi-esp32\components\pmicpower\power_bsp.cpp
+         DumpRegs2102(pmu);
+         Serial.println("Initializing the AXP2101");
+         pmu.setVbusCurrentLimit(XPOWERS_AXP2101_VBUS_CUR_LIM_2000MA);
+
+         if(pmu.getDC1Voltage() != 3300) {
+           pmu.setDC1Voltage(3300);
+           Serial.println("Set DCDC1 to output 3V3");
+         }
+         if(pmu.getALDO1Voltage() != 3300) {
+           pmu.setALDO1Voltage(3300);
+           Serial.println("Set ALDO1 to output 3V3");
+         }
+         if(pmu.getALDO2Voltage() != 3300) {
+           pmu.setALDO2Voltage(3300);
+           Serial.println("Set ALDO2 to output 3V3");
+         }
+         if(pmu.getALDO3Voltage() != 3300) {
+           pmu.setALDO3Voltage(3300);
+           Serial.println("Set ALDO3 to output 3V3");
+         }
+         if(pmu.getALDO4Voltage() != 3300) {
+           pmu.setALDO4Voltage(3300);
+           Serial.println("Set ALDO4 to output 3V3");
+         }
+         DumpRegs2102(pmu);
+#endif
+         bFirst = false;
+      }
       pmu.enableSystemVoltageMeasure();
-      pmu.setALDO4Voltage(3300);
       pmu.enableALDO4();
       batteryVoltage = (uint32_t) (pmu.getBattVoltage() * 1000);
       LOG("batteryVoltage %ld\n",batteryVoltage);
+      while(pmu.isCharging()) {
+         MonitorCharge();
+      }
    }
    else {
       Serial.println("Error: AXP2101 NOT detected");
@@ -102,6 +212,7 @@ uint32_t readBatteryVoltage()
 
 bool isOnBatteryPwr()
 {
+   bool Ret;
    XPowersAXP2101 pmu;
    if (pmu.begin(Wire, AXP2101_SLAVE_ADDRESS, PIN_BME_SDA, PIN_BME_SCL)) {
       LOG("Battery %s connected,  %s charging\n",
@@ -109,9 +220,11 @@ bool isOnBatteryPwr()
           pmu.isCharging() ? "is" : "not");
    }
    else {
-      LOG("Error: AXP2101 NOT detected");
+      LOG("Error: AXP2101 NOT detected\n");
    }
-   return pmu.isBatteryConnect() && !pmu.isCharging();
+   Ret = pmu.isBatteryConnect() && !pmu.isCharging();
+   LOG("Returning: %d\n",Ret);
+   return Ret;
 }
 
 #endif   // PMU_AXP2102
@@ -1567,11 +1680,13 @@ const char *getWifiStatusPhrase(wl_status_t status)
  */
 void disableBuiltinLED()
 {
+#ifndef NO_BUILTIN_LED
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
   gpio_hold_en(static_cast<gpio_num_t>(LED_BUILTIN));
   gpio_deep_sleep_hold_en();
   return;
+#endif
 } // end disableBuiltinLED
 
 // Define the set of moon phase icon base on the chosen moon phase style

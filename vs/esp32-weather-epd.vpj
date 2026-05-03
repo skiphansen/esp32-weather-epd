@@ -422,6 +422,7 @@
 			Filters="">
 			<F N="../../docs/example_owm_resonse.json"/>
 			<F N="../platformio/include/locales/locale_en_US.inc"/>
+			<F N="../notes.txt"/>
 			<F N="../platformio/photo_printer_s3/photoprinter_s3.json"/>
 			<F N="../platformio/platformio.ini"/>
 			<F N="../platformio/update_vpj.sh"/>

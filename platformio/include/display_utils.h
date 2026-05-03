@@ -83,8 +83,10 @@ const char *getMoonPhaseStr(const owm_daily_t &daily);
 
 #ifdef HAS_BATT_CHARGER
 bool isOnBatteryPwr();
+void MonitorCharge();
 #else
-#define isOnBatteryPwr() 0
+#define isOnBatteryPwr() (1==1)
+#define MonitorCharge()
 #endif
 
 #endif
