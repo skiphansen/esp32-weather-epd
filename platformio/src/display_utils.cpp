@@ -162,6 +162,12 @@ uint32_t readBatteryVoltage()
    uint32_t batteryVoltage = 0;
    if (pmu.begin(Wire, AXP2101_SLAVE_ADDRESS, PIN_BME_SDA, PIN_BME_SCL)) {
       Serial.println("AXP2101 detected");
+      LOG("Count down starts\n");
+      for(int i = 30; i > 0; i--) {
+         LOG_RAW("%d .. ",i);
+         delay(1000);
+      }
+      LOG_RAW("\n");
       if(bFirst) {
       // First power up, initialize AXP2101 charger
 #ifdef PHOTO_PAINTER
