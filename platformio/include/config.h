@@ -73,6 +73,7 @@
    #define SENSOR_SHTC3
    #define PMU_AXP2102
    #define HAS_BATT_CHARGER
+   #define NO_BUILTIN_LED
 #endif   
 
 #if __has_include("local_config.h")

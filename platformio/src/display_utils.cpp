@@ -83,14 +83,45 @@ uint32_t readBatteryVoltage()
 uint32_t readBatteryVoltage()
 {
    XPowersAXP2101 pmu;
+   static bool bFirst = true;
 
    uint32_t batteryVoltage = 0;
    if (pmu.begin(Wire, AXP2101_SLAVE_ADDRESS, PIN_BME_SDA, PIN_BME_SCL)) {
       Serial.println("AXP2101 detected");
+      if(bFirst) {
+      // First power up, initialize AXP2101 charger
+#ifdef PHOTO_PAINTER
+      // Charger setup copied from Waveshare's ESP32-S3-PhotoPainter repo
+      // 01_Example\xiaozhi-esp32\components\pmicpower\power_bsp.cpp
+         Serial.println("Initializing the AXP2101");
+         pmu.setVbusCurrentLimit(XPOWERS_AXP2101_VBUS_CUR_LIM_2000MA);
+
+         if(pmu.getDC1Voltage() != 3300) {
+           pmu.setDC1Voltage(3300);
+           Serial.println("Set DCDC1 to output 3V3");
+         }
+         if(pmu.getALDO1Voltage() != 3300) {
+           pmu.setALDO1Voltage(3300);
+           Serial.println("Set ALDO1 to output 3V3");
+         }
+         if(pmu.getALDO2Voltage() != 3300) {
+           pmu.setALDO2Voltage(3300);
+           Serial.println("Set ALDO2 to output 3V3");
+         }
+         if(pmu.getALDO3Voltage() != 3300) {
+           pmu.setALDO3Voltage(3300);
+           Serial.println("Set ALDO3 to output 3V3");
+         }
+         if(pmu.getALDO4Voltage() != 3300) {
+           pmu.setALDO4Voltage(3300);
+           Serial.println("Set ALDO4 to output 3V3");
+         }
+#endif
+         bFirst = false;
+      }
       pmu.enableSystemVoltageMeasure();
-      pmu.setALDO4Voltage(3300);
       pmu.enableALDO4();
-      batteryVoltage = (uint32_t) (pmu.getBattVoltage() * 1000);
+      batteryVoltage = pmu.getBattVoltage();
       LOG("batteryVoltage %ld\n",batteryVoltage);
    }
    else {
@@ -109,7 +140,7 @@ bool isOnBatteryPwr()
           pmu.isCharging() ? "is" : "not");
    }
    else {
-      LOG("Error: AXP2101 NOT detected");
+      LOG("Error: AXP2101 NOT detected\n");
    }
    return pmu.isBatteryConnect() && !pmu.isCharging();
 }
@@ -1567,11 +1598,13 @@ const char *getWifiStatusPhrase(wl_status_t status)
  */
 void disableBuiltinLED()
 {
+#ifndef NO_BUILTIN_LED
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
   gpio_hold_en(static_cast<gpio_num_t>(LED_BUILTIN));
   gpio_deep_sleep_hold_en();
   return;
+#endif
 } // end disableBuiltinLED
 
 // Define the set of moon phase icon base on the chosen moon phase style

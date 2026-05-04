@@ -131,18 +131,13 @@ void beginDeepSleep(unsigned long startTime, tm *timeInfo)
 void setup()
 {
    Serial.begin(115200);
-   delay(1000); // Wait for 1 second
-}
-
-void setupInternal()
-{
   unsigned long startTime = millis();
 
 #if DEBUG_LEVEL >= 1
   printHeapUsage();
 #endif
 
-//  disableBuiltinLED();
+  disableBuiltinLED();
 
   // Open namespace for read/write to non-volatile storage
   prefs.begin(NVS_NAMESPACE, false);
@@ -402,13 +397,6 @@ void setupInternal()
  */
 void loop()
 {
-   static int bFirst = 1;
-   if(bFirst) {
-      bFirst = 0;
-      setupInternal();
-   }
-   
-
    Serial.println("Hello, World!"); // Print "Hello, World!" to the Serial Monitor
    delay(1000); // Wait for 1 second
 } // end loop
