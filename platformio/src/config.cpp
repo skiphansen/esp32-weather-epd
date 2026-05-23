@@ -21,7 +21,7 @@
 #if __has_include("local_pins.h")
 #pragma message("pin assignments defined by pins.h")
 #include "pins.h"
-#elif !defined(PHOTO_PAINTER)
+#elif defined(FIREBETTLE2) || defined(FIREBETTLE32)
 // PINS
 // The configuration below is intended for use with the project's official 
 // wiring diagrams using the FireBeetle 2 ESP32-E microcontroller board.
@@ -46,8 +46,8 @@ const uint8_t PIN_BME_SDA = 17;
 const uint8_t PIN_BME_SCL = 16;
 const uint8_t PIN_BME_PWR =  4;   // Irrelevant if directly connected to 3.3V
 const uint8_t BME_ADDRESS = 0x76; // 0x76 if SDO -> GND; 0x77 if SDO -> VCC
-#else
-// PHOTO_PAINTER
+
+#elif defined(PHOTO_PAINTER)
 // PINS
 // ADC pin used to measure battery voltage
 const uint8_t PIN_BAT_ADC  = A2; // A0 for micro-usb firebeetle
@@ -64,7 +64,26 @@ const uint8_t PIN_EPD_PWR  = PIN_NOT_ASSIGNED;
 const uint8_t PIN_BME_SDA = 47;
 const uint8_t PIN_BME_SCL = 48;
 const uint8_t PIN_BME_PWR =  PIN_NOT_ASSIGNED;
-#endif
+#elif defined(SEEED_EE04)
+// PINS
+// ADC pin used to measure battery voltage
+const uint8_t PIN_BAT_ADC  = A0; // A0 for micro-usb firebeetle
+// Pins for E-Paper Driver Board
+const uint8_t PIN_EPD_BUSY = 4;
+const uint8_t PIN_EPD_CS   = 44;
+const uint8_t PIN_EPD_RST  = 38;
+const uint8_t PIN_EPD_DC   = 10;
+const uint8_t PIN_EPD_SCK  = 7;
+const uint8_t PIN_EPD_MISO = PIN_NOT_ASSIGNED;
+const uint8_t PIN_EPD_MOSI = 9;
+const uint8_t PIN_EPD_PWR  = 43;
+// I2C
+const uint8_t PIN_BME_SDA = PIN_NOT_ASSIGNED;
+const uint8_t PIN_BME_SCL = PIN_NOT_ASSIGNED;
+const uint8_t PIN_BME_PWR =  PIN_NOT_ASSIGNED;
+#else
+  #error Unknown board type
+#endif   
 
 #if __has_include("credentials.h")
 #include "credentials.h"

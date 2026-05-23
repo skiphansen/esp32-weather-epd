@@ -227,7 +227,7 @@
 // DISPLAY_ROTATION
 //   Set rotation setting for display, 0 thru 3 corresponding to 4 
 //   cardinal rotations
-#define DISPLAY_ROTATION   2
+#define DISPLAY_ROTATION   1
 
 
 // ALERTS

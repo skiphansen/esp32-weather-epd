@@ -6,7 +6,7 @@ VPJ_FILE=../vs/esp32-weather-epd.vpj
 #dot_d_2vs.sh ${VPJ_FILE} ./platformio/.pio/build/dfrobot_firebeetle2_esp32e/src
 
 #dot_d_2vs.sh ${VPJ_FILE} .pio/build/dfrobot_firebeetle2_esp32e
-dot_d_2vs.sh ${VPJ_FILE} .pio/build/photo_painter
+dot_d_2vs.sh ${VPJ_FILE} .pio/build/seeed_ee04/
 cat ${VPJ_FILE} | sed -e 's!\\ ! !g' > e.vpj
 mv e.vpj ${VPJ_FILE}
 

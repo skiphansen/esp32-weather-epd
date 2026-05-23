@@ -62,6 +62,13 @@
                GxEPD2_730c_GDEP073E01::HEIGHT / 4> display;
 #endif
 
+#ifdef DISP_4C_PDI
+  #include <GxEPD2_4C.h>
+  #define DISP_WIDTH  800
+  #define DISP_HEIGHT 480
+  extern GxEPD2_4C<GxEPD2_740c_E2741QS0B3,
+            GxEPD2_740c_E2741QS0B3::HEIGHT> display;
+#endif
 
 typedef enum alignment
 {

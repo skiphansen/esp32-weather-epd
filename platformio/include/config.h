@@ -22,19 +22,22 @@
 #include <Arduino.h>
 
 #define PIN_NOT_ASSIGNED   255
-#ifndef PHOTO_PAINTER
+#if defined(FIREBETTLE2) || defined(FIREBETTLE32)
 // E-PAPER PANEL
 // This project supports the following E-Paper panels:
 //   DISP_BW_V2 - 7.5in e-Paper (v2)      800x480px  Black/White
 //   DISP_3C_B  - 7.5in e-Paper (B)       800x480px  Red/Black/White
 //   DISP_7C_S  - 7.3in Spectra 6 e-Paper 800x480px  7-Color
 //   DISP_BW_V1 - 7.5in e-Paper (v1)      640x384px  Black/White
+//   DISP_4C_PDI - 7.4in e-Paper          800x480px  Red/White/Black/Yellow
+
 // Uncomment the macro that identifies your physical panel.
 #define DISP_BW_V2
 // #define DISP_3C_B
 // #define DISP_7C_F
 // #define DISP_BW_V1
 // #define DISP_7C_S
+// #define DISP_4C_PDI
 
 // E-PAPER DRIVER BOARD
 // The DESPI-C02 is the only officially supported driver board.
@@ -45,10 +48,14 @@
 #define DRIVER_DESPI_C02
 // #define DRIVER_WAVESHARE
 
+
 // INDOOR ENVIRONMENT SENSOR
 // Uncomment the macro that identifies your sensor.
 #define SENSOR_BME280
+// #define SENSOR_SHTC3
 // #define SENSOR_BME680
+// #define SENSOR_SHT4X
+// #define SENSOR_NONE
 
 // If you encounter issues with the BME280 sensor showing no data, uncomment and
 // add a small delay before reading it's value. 300ms seems to work for most people
@@ -65,8 +72,7 @@
   // #define ACCENT_COLOR GxEPD_ORANGE
 #endif
 
-#else
-   // PHOTO_PAINTER
+#elif defined(PHOTO_PAINTER)
    #define DISP_7C_E6
    #define DRIVER_DESPI_C02
    #define ACCENT_COLOR GxEPD_RED
@@ -74,7 +80,39 @@
    #define PMU_AXP2102
    #define HAS_BATT_CHARGER
    #define NO_BUILTIN_LED
+#elif defined(SEEED_EE04)
+// E-PAPER PANEL
+// This project supports the following E-Paper panels:
+//   DISP_BW_V2 - 7.5in e-Paper (v2)      800x480px  Black/White
+//   DISP_3C_B  - 7.5in e-Paper (B)       800x480px  Red/Black/White
+//   DISP_7C_S  - 7.3in Spectra 6 e-Paper 800x480px  7-Color
+//   DISP_BW_V1 - 7.5in e-Paper (v1)      640x384px  Black/White
+//   DISP_4C_PDI - 7.4in e-Paper          800x480px  Red/White/Black/Yellow
+
+// Uncomment the macro that identifies your physical panel.
+// #define DISP_BW_V2
+// #define DISP_3C_B
+// #define DISP_7C_F
+// #define DISP_BW_V1
+// #define DISP_7C_S
+#define DISP_4C_PDI
+// INDOOR ENVIRONMENT SENSOR
+// Uncomment the macro that identifies your sensor.
+
+// #define SENSOR_BME280
+// #define SENSOR_SHTC3
+// #define SENSOR_BME680
+// #define SENSOR_SHT4X
+   #define SENSOR_NONE
+
+   #define DRIVER_DESPI_C02
+   #define ACCENT_COLOR GxEPD_RED
+//   #define HAS_BATT_CHARGER
+   #define NO_BUILTIN_LED
+#else
+  #error Unknown board type
 #endif   
+
 
 #if __has_include("local_config.h")
 // If local_config.h exists use it rather than the following definitions.
@@ -393,6 +431,7 @@ extern const uint32_t MIN_BATTERY_VOLTAGE;
       ^ defined(DISP_3C_B)   \
       ^ defined(DISP_7C_F)   \
       ^ defined(DISP_7C_E6)   \
+      ^ defined(DISP_4C_PDI)   \
       ^ defined(DISP_BW_V1))
   #error Invalid configuration. Exactly one display panel must be selected.
 #endif
@@ -402,7 +441,9 @@ extern const uint32_t MIN_BATTERY_VOLTAGE;
 #endif
 #if !(  defined(SENSOR_BME280) \
       ^ defined(SENSOR_SHTC3) \
-      ^ defined(SENSOR_BME680))
+      ^ defined(SENSOR_BME680) \
+      ^ defined(SENSOR_SHT4X) \
+      ^ defined(SENSOR_NONE))
   #error Invalid configuration. Exactly one sensor must be selected.
 #endif
 #if !(defined(LOCALE))

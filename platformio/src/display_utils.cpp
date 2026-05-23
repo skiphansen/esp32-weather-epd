@@ -71,6 +71,10 @@ uint32_t readBatteryVoltage()
   // DFRobot FireBeetle Esp32-E V1.0 voltage divider (1M+1M), so readings are
   // multiplied by 2.
   batteryVoltage *= 2;
+#ifdef SEEED_EE04
+// Fix me !!!
+  batteryVoltage = 3600;
+#endif
   return batteryVoltage;
 } // end readBatteryVoltage
 

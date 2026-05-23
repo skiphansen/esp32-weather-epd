@@ -80,6 +80,16 @@
                            PIN_EPD_BUSY));
 #endif
 
+#ifdef DISP_4C_PDI
+  GxEPD2_4C<GxEPD2_740c_E2741QS0B3,
+            GxEPD2_740c_E2741QS0B3::HEIGHT> display(
+    GxEPD2_740c_E2741QS0B3(PIN_EPD_CS,
+                           PIN_EPD_DC,
+                           PIN_EPD_RST,
+                           PIN_EPD_BUSY));
+#endif
+
+
 #ifndef ACCENT_COLOR
   #define ACCENT_COLOR GxEPD_BLACK
 #endif
